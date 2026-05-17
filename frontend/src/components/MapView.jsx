@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-const YANDEX_API_KEY = "YOUR_YANDEX_MAPS_API_KEY";
+const YANDEX_API_KEY = "611ec252-06fe-4112-81ff-2ec666445fd1";
 
 function loadYandexMaps() {
   if (window.ymaps) return Promise.resolve(window.ymaps);
