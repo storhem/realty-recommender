@@ -48,5 +48,30 @@ services:
     depends_on:
       - backend
 
+  stats-service:
+    build: ./stats-service
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/realty?sslmode=disable
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  agent:
+    build: ./agent
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/realty
+      REDIS_URL: redis://redis:6379/0
+      AGENT_INTERVAL_SEC: "300"
+      ACTIVE_WINDOW_HOURS: "24"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
 volumes:
   postgres_data:

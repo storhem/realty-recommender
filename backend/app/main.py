@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, properties, recommendations, users, ratings, favorites
+from app.routers import auth, properties, recommendations, users, ratings, favorites, stats
 
 app = FastAPI(
     title="Рекомендательная система недвижимости",
@@ -23,6 +23,7 @@ app.include_router(recommendations.router)
 app.include_router(users.router)
 app.include_router(ratings.router)
 app.include_router(favorites.router)
+app.include_router(stats.router)
 
 
 @app.get("/health", tags=["Система"])

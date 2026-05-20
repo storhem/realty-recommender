@@ -22,6 +22,10 @@ frontend/dist/
 .DS_Store
 Thumbs.db
 
+# Go binaries
+stats-service/stats-service
+stats-service/stats-service.exe
+
 # IDE
 .vscode/
 .idea/
