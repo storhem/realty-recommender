@@ -3,8 +3,16 @@ source = app
 omit =
     app/__init__.py
     app/models/__init__.py
+    app/routers/__init__.py
+    app/schemas/__init__.py
+    app/services/__init__.py
 
 [report]
+show_missing = True
 exclude_lines =
     pragma: no cover
     if __name__ == .__main__.:
+    raise NotImplementedError
+
+[html]
+directory = htmlcov
