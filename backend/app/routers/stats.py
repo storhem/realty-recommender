@@ -17,4 +17,4 @@ async def get_stats():
             resp.raise_for_status()
             return resp.json()
     except httpx.HTTPError as exc:
-        raise HTTPException(status_code=503, detail=f"Stats service unavailable: {exc}")
+        raise HTTPException(status_code=503, detail=f"Stats service unavailable: {exc}") from exc
