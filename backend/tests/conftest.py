@@ -40,8 +40,17 @@ async def _truncate_all() -> None:
 
 @pytest.fixture(autouse=True)
 def reset_tables():
-    """Очищает все таблицы после каждого теста в изолированном event loop."""
+    """Очищает все таблицы и сбрасывает Redis-синглтон между тестами.
+
+    _redis хранит соединение, привязанное к event loop создавшего его теста.
+    pytest-asyncio создаёт новый loop для каждого теста, поэтому без сброса
+    следующий тест получает «Future attached to a different loop».
+    Синхронный asyncio.run() запускает очистку БД в изолированном loop.
+    """
+    import app.core.cache as _cache
+    _cache._redis = None          # каждый тест начинает с чистого соединения
     yield
+    _cache._redis = None          # не держим стало соединение после теста
     asyncio.run(_truncate_all())
 
 
