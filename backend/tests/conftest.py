@@ -54,6 +54,19 @@ def reset_tables():
     asyncio.run(_truncate_all())
 
 
+@pytest_asyncio.fixture(loop_scope="function", autouse=True)
+async def cleanup_redis():
+    """Закрывает Redis-соединение до завершения event loop теста.
+
+    Без явного aclose() деструктор соединения вызывается GC уже после
+    закрытия loop и генерирует PytestUnraisableExceptionWarning.
+    """
+    yield
+    import app.core.cache as _cache
+    if _cache._redis is not None:
+        await _cache._redis.aclose()
+
+
 @pytest_asyncio.fixture(loop_scope="function")
 async def db() -> AsyncSession:
     async with TestSessionLocal() as session:
