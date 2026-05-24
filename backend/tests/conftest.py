@@ -2,6 +2,7 @@ import pytest_asyncio
 from geoalchemy2.functions import ST_GeogFromText
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.pool import NullPool
 
 from app.core.security import hash_password
 from app.database import Base, get_db
@@ -11,7 +12,10 @@ from app.models.user import User
 
 TEST_DB_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/realty_test"
 
-engine = create_async_engine(TEST_DB_URL, echo=False)
+# NullPool отключает переиспользование соединений — каждый запрос
+# получает свежее asyncpg-соединение, что исключает "another operation
+# is in progress" при параллельных или следующих друг за другом тестах.
+engine = create_async_engine(TEST_DB_URL, echo=False, poolclass=NullPool)
 TestSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 
