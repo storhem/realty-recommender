@@ -33,9 +33,12 @@ async def db() -> AsyncSession:
 
 
 @pytest_asyncio.fixture
-async def client(db):
+async def client():
+    # Каждый HTTP-запрос получает собственную сессию —
+    # это предотвращает "another operation is in progress" в asyncpg.
     async def override_get_db():
-        yield db
+        async with TestSessionLocal() as session:
+            yield session
 
     app.dependency_overrides[get_db] = override_get_db
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
@@ -45,7 +48,11 @@ async def client(db):
 
 @pytest_asyncio.fixture
 async def test_user(db):
-    user = User(email="test@example.com", hashed_password=hash_password("password123"), name="Test User")
+    user = User(
+        email="test@example.com",
+        hashed_password=hash_password("password123"),
+        name="Test User",
+    )
     db.add(user)
     await db.commit()
     await db.refresh(user)
@@ -54,10 +61,14 @@ async def test_user(db):
 
 @pytest_asyncio.fixture
 async def auth_headers(client):
-    await client.post("/auth/register", json={
-        "email": "auth@example.com", "password": "password123", "name": "Auth User"
-    })
-    resp = await client.post("/auth/login", json={"email": "auth@example.com", "password": "password123"})
+    await client.post(
+        "/auth/register",
+        json={"email": "auth@example.com", "password": "password123", "name": "Auth User"},
+    )
+    resp = await client.post(
+        "/auth/login",
+        json={"email": "auth@example.com", "password": "password123"},
+    )
     token = resp.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}
 
