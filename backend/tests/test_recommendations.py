@@ -1,9 +1,7 @@
 import numpy as np
-import pytest
 
 from app.services.recommender import compute_item_similarity, get_recommendations_from_matrix
 
-# --- Unit-тесты алгоритма (без БД) ---
 
 def test_item_similarity_shape():
     matrix = np.array([
@@ -30,7 +28,7 @@ def test_recommendations_exclude_seen():
     ], dtype=np.float32)
     sim = compute_item_similarity(matrix)
     recs = get_recommendations_from_matrix(user_idx=0, matrix=matrix, item_sim=sim, top_n=5)
-    seen = {0, 1}  # user 0 has interacted with items 0 and 1
+    seen = {0, 1}
     for idx in recs:
         assert idx not in seen
 
@@ -49,9 +47,6 @@ def test_empty_matrix_returns_empty():
     assert recs == []
 
 
-# --- Интеграционные тесты API рекомендаций ---
-
-@pytest.mark.asyncio
 async def test_recommendations_cold_start(client, auth_headers):
     """Новый пользователь получает популярные объекты (холодный старт)."""
     resp = await client.get("/recommendations", headers=auth_headers)
@@ -59,7 +54,6 @@ async def test_recommendations_cold_start(client, auth_headers):
     assert isinstance(resp.json(), list)
 
 
-@pytest.mark.asyncio
 async def test_recommendations_unauthorized(client):
     resp = await client.get("/recommendations")
     assert resp.status_code == 403

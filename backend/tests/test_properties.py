@@ -1,5 +1,3 @@
-import pytest
-
 PROPERTY_PAYLOAD = {
     "title": "Светлая студия",
     "type": "studio",
@@ -12,7 +10,6 @@ PROPERTY_PAYLOAD = {
 }
 
 
-@pytest.mark.asyncio
 async def test_create_property(client, auth_headers):
     resp = await client.post("/properties", json=PROPERTY_PAYLOAD, headers=auth_headers)
     assert resp.status_code == 201
@@ -23,13 +20,11 @@ async def test_create_property(client, auth_headers):
     assert "id" in data
 
 
-@pytest.mark.asyncio
 async def test_create_property_unauthorized(client):
     resp = await client.post("/properties", json=PROPERTY_PAYLOAD)
     assert resp.status_code == 403
 
 
-@pytest.mark.asyncio
 async def test_list_properties(client, test_property):
     resp = await client.get("/properties")
     assert resp.status_code == 200
@@ -37,7 +32,6 @@ async def test_list_properties(client, test_property):
     assert len(resp.json()) >= 1
 
 
-@pytest.mark.asyncio
 async def test_filter_by_type(client, auth_headers):
     await client.post("/properties", json=PROPERTY_PAYLOAD, headers=auth_headers)
     resp = await client.get("/properties", params={"type": "studio"})
@@ -46,7 +40,6 @@ async def test_filter_by_type(client, auth_headers):
         assert p["type"] == "studio"
 
 
-@pytest.mark.asyncio
 async def test_filter_by_price(client, auth_headers):
     await client.post("/properties", json=PROPERTY_PAYLOAD, headers=auth_headers)
     resp = await client.get("/properties", params={"price_max": 4_000_000})
@@ -55,20 +48,17 @@ async def test_filter_by_price(client, auth_headers):
         assert p["price"] <= 4_000_000
 
 
-@pytest.mark.asyncio
 async def test_get_property_authenticated(client, auth_headers, test_property):
     resp = await client.get(f"/properties/{test_property.id}", headers=auth_headers)
     assert resp.status_code == 200
     assert resp.json()["id"] == test_property.id
 
 
-@pytest.mark.asyncio
 async def test_get_property_not_found(client, auth_headers):
     resp = await client.get("/properties/999999", headers=auth_headers)
     assert resp.status_code == 404
 
 
-@pytest.mark.asyncio
 async def test_geo_search(client, test_property):
     resp = await client.get("/properties/geo", params={
         "lat": 55.751244,
@@ -82,7 +72,6 @@ async def test_geo_search(client, test_property):
         assert "distance_m" in results[0]
 
 
-@pytest.mark.asyncio
 async def test_geo_search_invalid_params(client):
     resp = await client.get("/properties/geo", params={"lat": 999, "lon": 0, "radius": 1000})
     assert resp.status_code == 422

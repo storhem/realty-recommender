@@ -1,7 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
-import pytest
 
 MOCK_STATS = {
     "properties": 30,
@@ -27,7 +26,6 @@ def _make_mock_client(response_json=None, side_effect=None):
     return mock_client
 
 
-@pytest.mark.asyncio
 async def test_stats_success(client):
     with patch("app.routers.stats.httpx.AsyncClient", return_value=_make_mock_client()):
         resp = await client.get("/stats")
@@ -38,7 +36,6 @@ async def test_stats_success(client):
     assert data["views"] == 120
 
 
-@pytest.mark.asyncio
 async def test_stats_all_fields_present(client):
     with patch("app.routers.stats.httpx.AsyncClient", return_value=_make_mock_client()):
         resp = await client.get("/stats")
@@ -47,7 +44,6 @@ async def test_stats_all_fields_present(client):
         assert field in data
 
 
-@pytest.mark.asyncio
 async def test_stats_service_unavailable(client):
     mock = _make_mock_client(side_effect=httpx.ConnectError("refused"))
     with patch("app.routers.stats.httpx.AsyncClient", return_value=mock):
@@ -56,7 +52,6 @@ async def test_stats_service_unavailable(client):
     assert "unavailable" in resp.json()["detail"].lower()
 
 
-@pytest.mark.asyncio
 async def test_stats_timeout(client):
     mock = _make_mock_client(side_effect=httpx.TimeoutException("timeout"))
     with patch("app.routers.stats.httpx.AsyncClient", return_value=mock):

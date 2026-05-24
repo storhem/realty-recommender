@@ -1,3 +1,6 @@
+import asyncio
+
+import pytest
 import pytest_asyncio
 from geoalchemy2.functions import ST_GeogFromText
 from httpx import ASGITransport, AsyncClient
@@ -30,22 +33,26 @@ async def setup_database():
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest_asyncio.fixture(autouse=True)
-async def reset_tables():
-    """Очищает все таблицы между тестами — гарантирует изоляцию состояния."""
-    yield
+async def _truncate_all() -> None:
     async with engine.begin() as conn:
         await conn.execute(text("TRUNCATE users, properties RESTART IDENTITY CASCADE"))
 
 
-@pytest_asyncio.fixture
+@pytest.fixture(autouse=True)
+def reset_tables():
+    """Очищает все таблицы после каждого теста в изолированном event loop."""
+    yield
+    asyncio.run(_truncate_all())
+
+
+@pytest_asyncio.fixture(loop_scope="function")
 async def db() -> AsyncSession:
     async with TestSessionLocal() as session:
         yield session
         await session.rollback()
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(loop_scope="function")
 async def client():
     # Каждый HTTP-запрос получает собственную сессию —
     # это предотвращает "another operation is in progress" в asyncpg.
@@ -59,7 +66,7 @@ async def client():
     app.dependency_overrides.clear()
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(loop_scope="function")
 async def test_user(db):
     user = User(
         email="test@example.com",
@@ -72,7 +79,7 @@ async def test_user(db):
     return user
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(loop_scope="function")
 async def auth_headers(client):
     await client.post(
         "/auth/register",
@@ -86,7 +93,7 @@ async def auth_headers(client):
     return {"Authorization": f"Bearer {token}"}
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(loop_scope="function")
 async def test_property(db):
     prop = Property(
         title="Тестовая квартира",

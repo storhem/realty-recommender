@@ -1,7 +1,3 @@
-import pytest
-
-
-@pytest.mark.asyncio
 async def test_register_success(client):
     resp = await client.post("/auth/register", json={
         "email": "new@example.com",
@@ -15,7 +11,6 @@ async def test_register_success(client):
     assert "hashed_password" not in data
 
 
-@pytest.mark.asyncio
 async def test_register_duplicate_email(client):
     payload = {"email": "dup@example.com", "password": "pass", "name": "User"}
     await client.post("/auth/register", json=payload)
@@ -24,7 +19,6 @@ async def test_register_duplicate_email(client):
     assert "уже зарегистрирован" in resp.json()["detail"]
 
 
-@pytest.mark.asyncio
 async def test_login_success(client):
     await client.post("/auth/register", json={
         "email": "login@example.com", "password": "mypassword", "name": "Login User"
@@ -38,7 +32,6 @@ async def test_login_success(client):
     assert data["token_type"] == "bearer"
 
 
-@pytest.mark.asyncio
 async def test_login_wrong_password(client):
     await client.post("/auth/register", json={
         "email": "wrongpass@example.com", "password": "correct", "name": "User"
@@ -49,7 +42,6 @@ async def test_login_wrong_password(client):
     assert resp.status_code == 401
 
 
-@pytest.mark.asyncio
 async def test_login_unknown_email(client):
     resp = await client.post("/auth/login", json={
         "email": "nobody@example.com", "password": "pass"
@@ -57,14 +49,12 @@ async def test_login_unknown_email(client):
     assert resp.status_code == 401
 
 
-@pytest.mark.asyncio
 async def test_get_me(client, auth_headers):
     resp = await client.get("/users/me", headers=auth_headers)
     assert resp.status_code == 200
     assert resp.json()["email"] == "auth@example.com"
 
 
-@pytest.mark.asyncio
 async def test_get_me_unauthorized(client):
     resp = await client.get("/users/me")
     assert resp.status_code == 403

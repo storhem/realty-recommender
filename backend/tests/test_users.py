@@ -1,14 +1,9 @@
-import pytest
-
-
-@pytest.mark.asyncio
 async def test_history_empty(client, auth_headers):
     resp = await client.get("/users/me/history", headers=auth_headers)
     assert resp.status_code == 200
     assert resp.json() == []
 
 
-@pytest.mark.asyncio
 async def test_history_records_view(client, auth_headers, test_property):
     await client.get(f"/properties/{test_property.id}", headers=auth_headers)
     resp = await client.get("/users/me/history", headers=auth_headers)
@@ -17,7 +12,6 @@ async def test_history_records_view(client, auth_headers, test_property):
     assert test_property.id in ids
 
 
-@pytest.mark.asyncio
 async def test_history_returns_property_fields(client, auth_headers, test_property):
     await client.get(f"/properties/{test_property.id}", headers=auth_headers)
     resp = await client.get("/users/me/history", headers=auth_headers)
@@ -28,20 +22,17 @@ async def test_history_returns_property_fields(client, auth_headers, test_proper
     assert "area" in item
 
 
-@pytest.mark.asyncio
 async def test_history_unauthorized(client):
     resp = await client.get("/users/me/history")
     assert resp.status_code == 403
 
 
-@pytest.mark.asyncio
 async def test_me_returns_correct_email(client, auth_headers):
     resp = await client.get("/users/me", headers=auth_headers)
     assert resp.status_code == 200
     assert resp.json()["email"] == "auth@example.com"
 
 
-@pytest.mark.asyncio
 async def test_me_no_password_in_response(client, auth_headers):
     resp = await client.get("/users/me", headers=auth_headers)
     assert "hashed_password" not in resp.json()
