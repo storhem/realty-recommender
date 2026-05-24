@@ -1,11 +1,11 @@
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.property import Property
 from app.models.rating import Rating
 from app.models.view import View
-from app.models.property import Property
 
 
 def compute_item_similarity(ratings_matrix: np.ndarray) -> np.ndarray:

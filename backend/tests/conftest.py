@@ -1,14 +1,13 @@
-import pytest
 import pytest_asyncio
-from httpx import AsyncClient, ASGITransport
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from geoalchemy2.functions import ST_GeogFromText
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
+from app.core.security import hash_password
 from app.database import Base, get_db
 from app.main import app
-from app.core.security import hash_password
-from app.models.user import User
 from app.models.property import Property
-from geoalchemy2.functions import ST_GeogFromText
+from app.models.user import User
 
 TEST_DB_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/realty_test"
 

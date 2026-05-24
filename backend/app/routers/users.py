@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
+from app.models.property import Property
 from app.models.user import User
 from app.models.view import View
-from app.models.property import Property
 from app.routers.properties import _to_response
 from app.schemas.property import PropertyResponse
 from app.schemas.user import UserResponse

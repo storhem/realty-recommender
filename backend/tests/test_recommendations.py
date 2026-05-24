@@ -1,8 +1,7 @@
-import pytest
 import numpy as np
+import pytest
 
 from app.services.recommender import compute_item_similarity, get_recommendations_from_matrix
-
 
 # --- Unit-тесты алгоритма (без БД) ---
 

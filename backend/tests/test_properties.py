@@ -1,6 +1,5 @@
 import pytest
 
-
 PROPERTY_PAYLOAD = {
     "title": "Светлая студия",
     "type": "studio",

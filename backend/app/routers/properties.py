@@ -7,7 +7,7 @@ from app.database import get_db
 from app.models.property import Property
 from app.models.user import User
 from app.models.view import View
-from app.schemas.property import PropertyCreate, PropertyResponse, PropertyGeoResponse
+from app.schemas.property import PropertyCreate, PropertyGeoResponse, PropertyResponse
 from app.services.auth import get_current_user
 from app.services.geo import search_by_radius
 

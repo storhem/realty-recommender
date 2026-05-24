@@ -1,7 +1,8 @@
 from datetime import datetime
-from sqlalchemy import String, Float, Integer, Text, DateTime, ARRAY, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from geoalchemy2 import Geography
+from sqlalchemy import ARRAY, DateTime, Float, Integer, String, Text, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
 

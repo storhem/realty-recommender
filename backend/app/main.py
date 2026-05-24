@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import auth, properties, recommendations, users, ratings, favorites, stats
+from app.routers import auth, favorites, properties, ratings, recommendations, stats, users
 
 app = FastAPI(
     title="Рекомендательная система недвижимости",
