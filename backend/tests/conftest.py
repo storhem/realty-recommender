@@ -1,6 +1,7 @@
 import pytest_asyncio
 from geoalchemy2.functions import ST_GeogFromText
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 
@@ -19,7 +20,7 @@ engine = create_async_engine(TEST_DB_URL, echo=False, poolclass=NullPool)
 TestSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 
-@pytest_asyncio.fixture(scope="session", autouse=True)
+@pytest_asyncio.fixture(scope="session", loop_scope="session", autouse=True)
 async def setup_database():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -27,6 +28,14 @@ async def setup_database():
     yield
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def reset_tables():
+    """Очищает все таблицы между тестами — гарантирует изоляцию состояния."""
+    yield
+    async with engine.begin() as conn:
+        await conn.execute(text("TRUNCATE users, properties RESTART IDENTITY CASCADE"))
 
 
 @pytest_asyncio.fixture
