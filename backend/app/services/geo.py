@@ -68,6 +68,9 @@ async def search_by_radius(
     params["offset"] = offset
     order = _SORT_SQL.get(sort, _SORT_SQL["distance_asc"])
 
+    # фрагменты WHERE — внутренние литералы из _build_where_and_params,
+    # ORDER BY — из whitelist _SORT_SQL; пользовательские значения уходят
+    # через bind-параметры (:point, :radius, :type_, :price_min, ...).
     sql = text(f"""
         SELECT
             id, title, type, price, area, rooms, address,
@@ -81,7 +84,7 @@ async def search_by_radius(
         WHERE {' AND '.join(where)}
         ORDER BY {order}
         LIMIT :limit OFFSET :offset
-    """)
+    """)  # nosec B608
     result = await db.execute(sql, params)
     return [dict(row._mapping) for row in result.fetchall()]
 
@@ -102,6 +105,7 @@ async def count_by_radius(
     where, params = _build_where_and_params(
         point, radius_m, type_, deal_type, price_min, price_max, rooms, q
     )
-    sql = text(f"SELECT COUNT(*) FROM properties WHERE {' AND '.join(where)}")
+    # См. пояснение в search_by_radius: WHERE — литералы, значения — bind.
+    sql = text(f"SELECT COUNT(*) FROM properties WHERE {' AND '.join(where)}")  # nosec B608
     result = await db.execute(sql, params)
     return int(result.scalar_one())
