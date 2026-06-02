@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import CitySelector from "./CitySelector";
 
 export default function Navbar({ user, onLogout }) {
   const navigate = useNavigate();
@@ -28,15 +29,15 @@ export default function Navbar({ user, onLogout }) {
           <span>ДомПодбор</span>
         </Link>
 
+        <CitySelector />
+
         <div style={S.links}>
-          {[
-            { to: "/", label: "Каталог" },
-            ...(user ? [
-              { to: "/recommendations", label: "Рекомендации" },
-              { to: "/favorites", label: "Избранное" },
-              { to: "/history", label: "История" },
-            ] : []),
-          ].map(({ to, label }) => (
+          {(user ? [
+            { to: "/recommendations", label: "Рекомендации" },
+            { to: "/favorites", label: "Избранное" },
+            { to: "/saved-searches", label: "Поиски" },
+            { to: "/history", label: "История" },
+          ] : []).map(({ to, label }) => (
             <Link
               key={to} to={to}
               style={linkStyle(to)}
@@ -80,7 +81,7 @@ const S = {
     letterSpacing: "-0.5px", flexShrink: 0,
   },
   logo: { fontSize: 24 },
-  links: { display: "flex", gap: 4, flex: 1 },
+  links: { display: "flex", gap: 4, flex: 1, marginLeft: 16 },
   auth: { display: "flex", alignItems: "center", gap: 12, flexShrink: 0 },
   userName: { color: "rgba(255,255,255,0.85)", fontSize: 14 },
   logoutBtn: {
