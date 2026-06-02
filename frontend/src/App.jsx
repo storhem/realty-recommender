@@ -9,6 +9,7 @@ import RegisterPage from "./pages/RegisterPage";
 import RecommendationsPage from "./pages/RecommendationsPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import HistoryPage from "./pages/HistoryPage";
+import SavedSearchesPage from "./pages/SavedSearchesPage";
 
 export default function App() {
   const { user, loading, login, logout } = useAuth();
@@ -17,7 +18,7 @@ export default function App() {
     <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
       <Navbar user={user} onLogout={logout} />
       <Routes>
-        <Route path="/" element={<CatalogPage />} />
+        <Route path="/" element={<CatalogPage user={user} />} />
         <Route path="/properties/:id" element={<PropertyPage user={user} />} />
         <Route path="/login" element={<LoginPage onLogin={login} />} />
         <Route path="/register" element={<RegisterPage onLogin={login} />} />
@@ -34,6 +35,11 @@ export default function App() {
         <Route path="/history" element={
           <PrivateRoute user={user} loading={loading}>
             <HistoryPage />
+          </PrivateRoute>
+        } />
+        <Route path="/saved-searches" element={
+          <PrivateRoute user={user} loading={loading}>
+            <SavedSearchesPage />
           </PrivateRoute>
         } />
       </Routes>
