@@ -8,9 +8,11 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
     RECOMMENDATIONS_CACHE_TTL: int = 3600
+    STATS_SERVICE_URL: str = "http://stats-service:8080"
 
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 
 settings = Settings()
