@@ -27,7 +27,7 @@ async def get_history(
     result = await db.execute(
         select(View)
         .where(View.user_id == current_user.id)
-        .order_by(View.viewed_at.desc())
+        .order_by(View.created_at.desc())
         .limit(50)
     )
     views = result.scalars().all()
