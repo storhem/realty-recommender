@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const TYPE_LABELS = { apartment: "Квартира", house: "Дом", studio: "Студия", commercial: "Коммерческая" };
+const TYPE_LABELS = { apartment: "Квартира", house: "Дом", studio: "Студия", room: "Комната", commercial: "Коммерческая" };
 const TYPE_COLORS = {
   apartment: { bg: "#EFF6FF", color: "#2563EB" },
   house: { bg: "#F0FDF4", color: "#16A34A" },
   studio: { bg: "#FFF7ED", color: "#EA580C" },
+  room: { bg: "#FEF2F2", color: "#DC2626" },
   commercial: { bg: "#F5F3FF", color: "#7C3AED" },
 };
 
@@ -41,10 +42,23 @@ export default function PropertyCard({ property, extra }) {
 
         <div style={S.pills}>
           <span style={S.pill}>📐 {property.area} м²</span>
-          <span style={S.pill}>🛏 {property.rooms} комн.</span>
+          {property.type !== "house" && property.type !== "commercial" && (
+            <span style={S.pill}>🛏 {property.rooms} комн.</span>
+          )}
+          {property.floor != null && property.total_floors != null && (
+            <span style={S.pill}>🏢 {property.floor}/{property.total_floors}</span>
+          )}
+          {property.year_built != null && (
+            <span style={S.pill}>📅 {property.year_built} г.</span>
+          )}
         </div>
 
         <div style={S.address}>📍 {property.address}</div>
+        {property.distance_m != null && (
+          <div style={S.distance}>
+            ~{(property.distance_m / 1000).toFixed(property.distance_m < 10000 ? 1 : 0)} км от центра
+          </div>
+        )}
 
         {extra && <div style={S.extra}>{extra}</div>}
 
@@ -86,6 +100,7 @@ const S = {
     borderRadius: 20, padding: "3px 10px", fontSize: 12, color: "#475569",
   },
   address: { fontSize: 13, color: "#94A3B8" },
+  distance: { fontSize: 12, color: "#2563EB", fontWeight: 600 },
   extra: { fontSize: 13 },
   btn: {
     marginTop: "auto",

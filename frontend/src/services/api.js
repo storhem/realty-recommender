@@ -29,6 +29,24 @@ export const propertiesApi = {
   get: (id) => api.get(`/properties/${id}`),
   create: (data) => api.post("/properties", data),
   geoSearch: (params) => api.get("/properties/geo", { params }),
+  similar: (id, limit = 6) => api.get(`/properties/${id}/similar`, { params: { limit } }),
+};
+
+export const uploadsApi = {
+  photo: (file) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    return api.post("/uploads/photos", fd, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
+};
+
+export const savedSearchesApi = {
+  list: () => api.get("/saved-searches"),
+  create: (data) => api.post("/saved-searches", data),
+  remove: (id) => api.delete(`/saved-searches/${id}`),
+  markSeen: (id) => api.post(`/saved-searches/${id}/seen`),
 };
 
 export const recommendationsApi = {
