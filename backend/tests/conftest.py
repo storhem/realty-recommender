@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 import pytest
 import pytest_asyncio
@@ -14,7 +15,10 @@ from app.main import app
 from app.models.property import Property
 from app.models.user import User
 
-TEST_DB_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/realty_test"
+TEST_DB_URL = os.getenv(
+    "TEST_DATABASE_URL",
+    "postgresql+asyncpg://postgres:postgres@localhost:5432/realty_test",
+)
 
 # NullPool отключает переиспользование соединений — каждый запрос
 # получает свежее asyncpg-соединение, что исключает "another operation
