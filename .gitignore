@@ -29,3 +29,6 @@ stats-service/stats-service.exe
 # IDE
 .vscode/
 .idea/
+
+# Session log (local only)
+диалог_лог.txt
