@@ -1,7 +1,7 @@
 # Рекомендательная система недвижимости
 
 [![CI](https://github.com/storhem/realty-recommender/actions/workflows/ci.yml/badge.svg)](https://github.com/storhem/realty-recommender/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-78.77%25-brightgreen)](https://github.com/storhem/realty-recommender/actions)
+[![Coverage](https://img.shields.io/badge/coverage-85.81%25-brightgreen)](https://github.com/storhem/realty-recommender/actions)
 [![Python](https://img.shields.io/badge/python-3.12-blue)](https://www.python.org/)
 [![Go](https://img.shields.io/badge/go-1.22-00ADD8)](https://go.dev/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
@@ -175,7 +175,7 @@ pytest tests/ -v --cov=app --cov-report=term-missing
 ### Результаты
 
 ```
-58 passed, 0 failed — Coverage: 78.77%
+58 passed, 0 failed — Coverage: 85.81%
 ```
 
 | Группа тестов | Файл | Тестов |
@@ -214,7 +214,7 @@ GitHub Actions запускает 6 параллельных проверок п
 | Job | Инструмент | Что проверяет |
 |---|---|---|
 | **lint** | ruff 0.6.9 | стиль, импорты, UP/B/PLW правила |
-| **test-backend** | pytest + coverage | 58 тестов, порог покрытия 70% |
+| **test-backend** | pytest + coverage | 58 тестов, покрытие 85.81% (порог 85%) |
 | **test-agent** | pytest | unit-тесты агента |
 | **build-go** | go build + go test | сборка и тесты Go-сервиса |
 | **sast** | bandit | анализ уязвимостей Python-кода |
