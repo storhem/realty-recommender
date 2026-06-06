@@ -1,5 +1,7 @@
 import asyncio
 import os
+import subprocess
+from pathlib import Path
 
 import pytest
 import pytest_asyncio
@@ -10,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.pool import NullPool
 
 from app.core.security import hash_password
-from app.database import Base, get_db
+from app.database import get_db
 from app.main import app
 from app.models.property import Property
 from app.models.user import User
@@ -27,14 +29,37 @@ engine = create_async_engine(TEST_DB_URL, echo=False, poolclass=NullPool)
 TestSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 
+BACKEND_DIR = Path(__file__).resolve().parent.parent
+
+
+def _apply_migrations() -> None:
+    """Создаёт схему тестовой БД через Alembic — так же, как в продакшене.
+
+    Это гарантирует, что тесты проверяют ровно ту схему, которая будет
+    развёрнута командой ``alembic upgrade head``, а не схему, выведенную из
+    ORM-моделей через ``Base.metadata.create_all``. Иначе расхождение
+    «модель ↔ миграция» (например, имя столбца или отсутствующее ограничение)
+    осталось бы незамеченным тестами.
+    """
+    env = {**os.environ, "DATABASE_URL": TEST_DB_URL}
+    subprocess.run(
+        ["alembic", "upgrade", "head"],
+        cwd=str(BACKEND_DIR),
+        env=env,
+        check=True,
+    )
+
+
 @pytest_asyncio.fixture(scope="session", loop_scope="session", autouse=True)
 async def setup_database():
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.execute(text("DROP SCHEMA public CASCADE"))
+        await conn.execute(text("CREATE SCHEMA public"))
+    _apply_migrations()
     yield
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+        await conn.execute(text("DROP SCHEMA public CASCADE"))
+        await conn.execute(text("CREATE SCHEMA public"))
 
 
 async def _truncate_all() -> None:
