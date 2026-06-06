@@ -1,5 +1,6 @@
 [run]
 source = app
+concurrency = greenlet,thread
 omit =
     app/__init__.py
     app/models/__init__.py
