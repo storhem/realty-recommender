@@ -40,7 +40,7 @@ def perceive(conn) -> list[int]:
             """
             SELECT DISTINCT user_id FROM (
                 SELECT user_id FROM views
-                 WHERE viewed_at > NOW() - INTERVAL '%(h)s hours'
+                 WHERE created_at > NOW() - INTERVAL '%(h)s hours'
                 UNION
                 SELECT user_id FROM ratings
                  WHERE rated_at  > NOW() - INTERVAL '%(h)s hours'
