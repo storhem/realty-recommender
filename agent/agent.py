@@ -99,8 +99,13 @@ def decide(user_id: int, matrix: np.ndarray, user_ids: list, prop_ids: list) -> 
 # ── Действие ──────────────────────────────────────────────────────────────────
 
 def act(r: redis.Redis, user_id: int, recommendations: list[int]) -> None:
-    """Сохраняет рекомендации в Redis с TTL."""
-    key = f"recs:{user_id}"
+    """Сохраняет рекомендации в Redis с TTL.
+
+    Ключ `rec:{user_id}` совпадает с тем, что читает backend
+    (routers/recommendations.py), поэтому прогретый агентом кэш
+    переиспользуется эндпоинтом и сбрасывается при новой оценке.
+    """
+    key = f"rec:{user_id}"
     r.setex(key, CACHE_TTL, json.dumps(recommendations))
     log.info("  user_id=%-4d → %d рекомендаций сохранено", user_id, len(recommendations))
 

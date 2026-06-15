@@ -111,7 +111,7 @@ def test_act_writes_to_redis():
     act(r, user_id=42, recommendations=[10, 11, 12])
     r.setex.assert_called_once()
     key, ttl, value = r.setex.call_args[0]
-    assert key == "recs:42"
+    assert key == "rec:42"
     assert ttl == 3600
     assert json.loads(value) == [10, 11, 12]
 
