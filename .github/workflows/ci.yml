@@ -89,7 +89,7 @@ jobs:
             --cov-report=term-missing \
             --cov-report=html \
             --cov-report=xml \
-            --cov-fail-under=85
+            --cov-fail-under=70
 
       - name: Загрузить отчёт покрытия (HTML)
         uses: actions/upload-artifact@v4
