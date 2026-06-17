@@ -63,6 +63,10 @@ export const favoritesApi = {
   remove: (property_id) => api.delete(`/favorites/${property_id}`),
 };
 
+export const geocodeApi = {
+  search: (q) => api.get("/geocode", { params: { q } }),
+};
+
 export const usersApi = {
   me: () => api.get("/users/me"),
   history: () => api.get("/users/me/history"),

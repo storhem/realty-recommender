@@ -83,7 +83,7 @@ async def geo_search(
     rooms: int | None = None,
     q: str | None = None,
     sort: SortBy = SortBy.distance_asc,
-    limit: int = Query(20, ge=1, le=100),
+    limit: int = Query(20, ge=1, le=1000),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
 ):

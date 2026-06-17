@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from app.routers import (
     auth,
     favorites,
+    geocode,
     properties,
     ratings,
     recommendations,
@@ -41,6 +42,7 @@ app.include_router(favorites.router)
 app.include_router(stats.router)
 app.include_router(uploads.router)
 app.include_router(saved_searches.router)
+app.include_router(geocode.router)
 
 _UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "/app/uploads"))
 try:

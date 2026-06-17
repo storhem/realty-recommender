@@ -50,6 +50,7 @@ export default function Navbar({ user, onLogout }) {
         <div style={S.auth}>
           {user ? (
             <>
+              <Link to="/properties/new" style={S.addBtn}>+ Разместить</Link>
               <span style={S.userName}>👤 {user.name || user.email}</span>
               <button onClick={handleLogout} style={S.logoutBtn}>Выйти</button>
             </>
@@ -97,5 +98,10 @@ const S = {
     background: "#fff", color: "#2563EB", fontWeight: 600,
     padding: "6px 18px", borderRadius: 8, fontSize: 14,
     transition: "all .2s",
+  },
+  addBtn: {
+    background: "#fff", color: "#2563EB", fontWeight: 600,
+    padding: "6px 16px", borderRadius: 8, fontSize: 14,
+    transition: "all .2s", flexShrink: 0,
   },
 };

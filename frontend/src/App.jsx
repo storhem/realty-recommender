@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import PrivateRoute from "./components/PrivateRoute";
 import CatalogPage from "./pages/CatalogPage";
 import PropertyPage from "./pages/PropertyPage";
+import AddPropertyPage from "./pages/AddPropertyPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import RecommendationsPage from "./pages/RecommendationsPage";
@@ -19,6 +20,11 @@ export default function App() {
       <Navbar user={user} onLogout={logout} />
       <Routes>
         <Route path="/" element={<CatalogPage user={user} />} />
+        <Route path="/properties/new" element={
+          <PrivateRoute user={user} loading={loading}>
+            <AddPropertyPage />
+          </PrivateRoute>
+        } />
         <Route path="/properties/:id" element={<PropertyPage user={user} />} />
         <Route path="/login" element={<LoginPage onLogin={login} />} />
         <Route path="/register" element={<RegisterPage onLogin={login} />} />

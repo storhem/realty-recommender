@@ -20,6 +20,7 @@ const SORTS = [
   { value: "price_per_m_asc", label: "Цена за м² ↑" },
 ];
 const PAGE_SIZE = 12;
+const MAP_LIMIT = 1000; // карта показывает все объекты выдачи, а не одну страницу
 
 const INITIAL_FILTERS = {
   q: "", type: "", deal_type: "sale",
@@ -30,6 +31,7 @@ const INITIAL_FILTERS = {
 export default function CatalogPage({ user }) {
   const { city, radiusKm } = useLocationFilter();
   const [properties, setProperties] = useState([]);
+  const [mapProperties, setMapProperties] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
@@ -62,6 +64,19 @@ export default function CatalogPage({ user }) {
     }
   }, [city.id, city.lat, city.lon, radiusKm, cleanedFilters, page]);
 
+  // Загрузка всех объектов выдачи для карты (без пагинации)
+  const fetchMapProperties = useCallback(async () => {
+    const params = {
+      lat: city.lat,
+      lon: city.lon,
+      radius: radiusKm * 1000,
+      ...cleanedFilters(),
+      limit: MAP_LIMIT,
+    };
+    const { data } = await propertiesApi.geoSearch(params);
+    setMapProperties(data);
+  }, [city.lat, city.lon, radiusKm, cleanedFilters]);
+
   // Триггер при изменении города / радиуса / типа сделки / сортировки — со сбросом на 1 страницу
   useEffect(() => {
     setPage(1);
@@ -69,12 +84,18 @@ export default function CatalogPage({ user }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [city.id, radiusKm, filters.deal_type, filters.sort]);
 
+  // В режиме карты подгружаем все объекты (и обновляем при смене фильтров)
+  useEffect(() => {
+    if (mapMode) fetchMapProperties();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapMode, city.id, radiusKm, filters.deal_type, filters.sort]);
+
   const handleMapRadiusSearch = async ({ lat, lon, radius }) => {
     setLoading(true);
     try {
-      const params = { lat, lon, radius, ...cleanedFilters(), limit: 100 };
+      const params = { lat, lon, radius, ...cleanedFilters(), limit: MAP_LIMIT };
       const { data, headers } = await propertiesApi.geoSearch(params);
-      setProperties(data);
+      setMapProperties(data);
       setTotal(parseInt(headers["x-total-count"] || "0", 10));
     } finally {
       setLoading(false);
@@ -90,6 +111,7 @@ export default function CatalogPage({ user }) {
   const applyFilters = () => {
     setPage(1);
     fetchProperties(1);
+    if (mapMode) fetchMapProperties();
   };
 
   const resetFilters = () => {
@@ -188,7 +210,7 @@ export default function CatalogPage({ user }) {
 
         {mapMode ? (
           <MapView
-            properties={properties}
+            properties={mapProperties}
             center={[city.lat, city.lon]}
             onRadiusSearch={handleMapRadiusSearch}
           />
